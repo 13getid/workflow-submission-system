@@ -1,0 +1,14 @@
+# Ignore the virtual environment
+venv/
+.venv/
+env/
+
+# Ignore the local database (it stays on your computer)
+*.sqlite3
+
+# Ignore user-uploaded files
+media/
+
+# Ignore Python cached files
+__pycache__/
+*.pyc

@@ -1,0 +1,9 @@
+{ % extends 'submissions/base.html % }
+{% block title %}Success!{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>Submission Received!</h1>
+    <p>Thank you! Your submission was saved successfully.</p>
+    <a href="{% url 'home' %}" class="btn">Go Home</a>
+</div>
+{% endblock %}

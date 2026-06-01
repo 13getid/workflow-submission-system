@@ -1,0 +1,14 @@
+
+{% extends 'submissions/base.html' %} 
+{% block title %}Home - SwahiliPot Submission System{% endblock %}
+{% block content %}
+
+    <div class= "hero">
+    <h1>Welcome to Swahilipot Submission System</h1>
+
+    <p>
+        Welcome! You can submit your documents here easily
+    </p>
+    <a href= "{% url 'submit' %}" class = "btn">Submit Something</a>
+</div>
+{% endblock %}
