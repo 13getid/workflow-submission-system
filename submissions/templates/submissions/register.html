@@ -1,0 +1,64 @@
+{% extends 'submissions/base.html' %}
+
+{% block title %}Create Account — SwahiliPot{% endblock %}
+
+{% block content %}
+<div class="page-center">
+    <div class="auth-wrap">
+        <div class="auth-left">
+            <div>
+                <div class="auth-badge">✨ Join for free</div>
+                <h2 class="auth-headline">Start your<br>journey<br>today.</h2>
+                <p class="auth-subtext">Create your free account and start submitting projects in minutes.</p>
+            </div>
+            <div class="auth-stats">
+                <div class="stat-box">
+                    <div class="stat-num">Free</div>
+                    <div class="stat-label">Always</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">5min</div>
+                    <div class="stat-label">To get started</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">24/7</div>
+                    <div class="stat-label">Available</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <p class="auth-title">Create your account</p>
+            <p class="auth-subtitle">Join SwahiliPot today — it's completely free</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="field-group">
+                    <label class="field-label">{{ field.label|upper }}</label>
+                    <input class="field-input"
+                        type="{{ field.field.widget.input_type }}"
+                        name="{{ field.html_name }}"
+                        placeholder="{{ field.label }}"
+                        {% if field.value %}value="{{ field.value }}"{% endif %}>
+                    {% if field.errors %}
+                    <span style="font-size:12px; color:#991b1b;">{{ field.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn-primary">Create account →</button>
+            </form>
+
+            <div class="auth-divider">
+                <div class="auth-divider-line"></div>
+                <span class="auth-divider-text">ALREADY HAVE AN ACCOUNT?</span>
+                <div class="auth-divider-line"></div>
+            </div>
+
+            <div class="auth-switch">
+                <a href="{% url 'login' %}">Sign in instead →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

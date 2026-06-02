@@ -1,14 +1,31 @@
 
 {% extends 'submissions/base.html' %} 
-{% block title %}Home - SwahiliPot Submission System{% endblock %}
+{% block title %}Home - SwahiliPot {% endblock %}
 {% block content %}
 
-    <div class= "hero">
-    <h1>Welcome to Swahilipot Submission System</h1>
-
-    <p>
-        Welcome! You can submit your documents here easily
-    </p>
-    <a href= "{% url 'submit' %}" class = "btn">Submit Something</a>
+   <div class="page-center">
+    <div class="hero-wrap">
+        <div class="hero-card">
+            <div class="hero-left">
+                <h1>Submit.<br>Track.<br>Succeed.</h1>
+                <p>A powerful submission management platform built for teams that move fast and think big.</p>
+                <a href="{% url 'submit' %}" class="btn">Make a Submission →</a>
+            </div>
+            <div class="hero-right">
+                <div class="mini-stat">
+                    <div class="mini-stat-num">1.2k</div>
+                    <div class="mini-stat-label">Submissions</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-num">98%</div>
+                    <div class="mini-stat-label">Approval rate</div>
+                </div>
+                <div class="mini-stat">
+                    <div class="mini-stat-num">24h</div>
+                    <div class="mini-stat-label">Response time</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

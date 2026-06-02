@@ -1,0 +1,68 @@
+{% extends 'submissions/base.html' %}
+
+{% block title %}Sign In — SwahiliPot{% endblock %}
+
+{% block content %}
+<div class="page-center">
+    <div class="auth-wrap">
+        <div class="auth-left">
+            <div>
+                <div class="auth-badge">🔒 Secure Portal</div>
+                <h2 class="auth-headline">Submit.<br>Track.<br>Succeed.</h2>
+                <p class="auth-subtext">A powerful submission management platform built for teams that move fast and think big.</p>
+            </div>
+            <div class="auth-stats">
+                <div class="stat-box">
+                    <div class="stat-num">1.2k</div>
+                    <div class="stat-label">Submissions</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">98%</div>
+                    <div class="stat-label">Approval rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num">24h</div>
+                    <div class="stat-label">Response time</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-right">
+            <p class="auth-title">Welcome back</p>
+            <p class="auth-subtitle">Sign in to your SwahiliPot account</p>
+
+            {% if form.errors %}
+            <div class="messages">
+                <div class="message error">
+                    Wrong username or password. Please try again.
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="field-group">
+                    <label class="field-label">USERNAME</label>
+                    <input class="field-input" type="text" name="username" placeholder="Enter your username" autofocus>
+                </div>
+                <div class="field-group">
+                    <label class="field-label">PASSWORD</label>
+                    <input class="field-input" type="password" name="password" placeholder="••••••••">
+                </div>
+                <a href="#" class="forgot-link">Forgot password?</a>
+                <button type="submit" class="btn-primary">Sign in →</button>
+            </form>
+
+            <div class="auth-divider">
+                <div class="auth-divider-line"></div>
+                <span class="auth-divider-text">NEW HERE?</span>
+                <div class="auth-divider-line"></div>
+            </div>
+
+            <div class="auth-switch">
+                No account yet? <a href="{% url 'register' %}">Create one free →</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
