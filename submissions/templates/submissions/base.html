@@ -1,30 +1,33 @@
-{%load static %}
+{% load static %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{% block title %} SwahiliPot Submission System{% endblock %} </title>
-        <link rel="stylesheet" href="{% static 'submissions/css/style.css' %}">
-    </head>
-    <body>
-        <nav class="navbar">
-            <a href="{% url 'home' %}">
-                <a href="{% url 'home' %} "class="navbar-brand">
-                <div class="navbar-logo">📋</div>
-                <span class="navbar-name">SwahiliPot</span>
-            </a>
-            <div class="navbar-links">
-                {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'logout' %}">Logout</a>
-                {% else %}
-                <a href="{% url 'login' %}">Sign in</a>
-                <a href="{% url 'register' %}">Register</a>
-                {% endif %}
-            </div>
-        </nav>
+<head>
+    <title>{% block title %}SwahiliPot Submission System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'submissions/css/style.css' %}">
+</head>
+<body>
 
-            {% block content %} 
-            {% endblock %}
+<nav class="navbar">
+    <a href="{% url 'home' %}" class="navbar-brand">
+        <div class="navbar-logo">📋</div>
+        <span class="navbar-name">SwahiliPot</span>
+    </a>
+    <div class="navbar-links">
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" style="color:#1D9E75; font-weight:700;">⚙️ Admin Panel</a>
+            {% endif %}
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Sign in</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </div>
+</nav>
 
-    </body>
-    </html>
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

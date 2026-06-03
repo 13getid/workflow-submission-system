@@ -80,7 +80,7 @@ def admin_dashboard(request):
         'pending': pending,
         'rejected': rejected,
     }
-    return render(request, 'submission/admin_dashboard.html', context)
+    return render(request, 'submissions/admin_dashboard.html', context)
 
 @staff_member_required(login_url='login')
 def update_status(request, submission_id):

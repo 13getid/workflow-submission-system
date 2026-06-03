@@ -1,0 +1,114 @@
+{% extends 'submissions/base.html' %}
+
+{% block title %}Admin Panel — SwahiliPot{% endblock %}
+
+{% block content %}
+<div style="padding: 2rem 3rem; max-width:1100px; margin: 0 auto;">
+
+  <!-- Header -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+    <div>
+      <h1 style="font-size:26px; font-weight:800; color:#0f172a;">⚙️ Admin Panel</h1>
+      <p style="font-size:14px; color:#64748b; margin-top:4px;">Manage all submissions from all users</p>
+    </div>
+    <div style="background:#0f172a; color:#1D9E75; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700;">
+      👤 {{ request.user.username }}
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:1.5rem;">
+    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:28px; font-weight:800; color:#1D9E75;">{{ total }}</div>
+      <div style="font-size:12px; color:#64748b; margin-top:4px;">Total submissions</div>
+    </div>
+    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:28px; font-weight:800; color:#166534;">{{ approved }}</div>
+      <div style="font-size:12px; color:#64748b; margin-top:4px;">Approved</div>
+    </div>
+    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:28px; font-weight:800; color:#854d0e;">{{ pending }}</div>
+      <div style="font-size:12px; color:#64748b; margin-top:4px;">Pending</div>
+    </div>
+    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:28px; font-weight:800; color:#991b1b;">{{ rejected }}</div>
+      <div style="font-size:12px; color:#64748b; margin-top:4px;">Rejected</div>
+    </div>
+  </div>
+
+  <!-- Submissions table -->
+  <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;">
+
+    <!-- Table header -->
+    <div style="padding:18px 24px; border-bottom:1px solid #f1f5f9;">
+      <span style="font-size:16px; font-weight:700; color:#0f172a;">All Submissions</span>
+    </div>
+
+    {% if submissions %}
+
+      <!-- Column labels -->
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 160px; padding:10px 24px; background:#f8fafc; border-bottom:1px solid #f1f5f9;">
+        <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">PROJECT</span>
+        <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">SUBMITTED BY</span>
+        <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">DATE</span>
+        <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">STATUS</span>
+        <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">ACTION</span>
+      </div>
+
+      {% for submission in submissions %}
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 160px; padding:16px 24px; border-bottom:1px solid #f8fafc; align-items:center;">
+
+        <!-- Project title + description -->
+        <div>
+          <div style="font-size:14px; font-weight:700; color:#0f172a;">{{ submission.project_title }}</div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:3px;">{{ submission.description|truncatechars:50 }}</div>
+        </div>
+
+        <!-- Username -->
+        <div style="font-size:13px; color:#475569; font-weight:500;">
+          👤 {{ submission.user.username }}
+        </div>
+
+        <!-- Date -->
+        <div style="font-size:12px; color:#94a3b8;">
+          {{ submission.submitted_at|date:"M j, Y" }}
+        </div>
+
+        <!-- Status badge -->
+        <div>
+          {% if submission.status == 'approved' %}
+            <span style="background:#dcfce7; color:#166534; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">✅ Approved</span>
+          {% elif submission.status == 'rejected' %}
+            <span style="background:#fee2e2; color:#991b1b; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">❌ Rejected</span>
+          {% else %}
+            <span style="background:#fef9c3; color:#854d0e; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">⏳ Pending</span>
+          {% endif %}
+        </div>
+
+        <!-- Update form -->
+        <form method="POST" action="{% url 'update_status' submission.id %}" style="display:flex; gap:6px; align-items:center;">
+          {% csrf_token %}
+          <select name="status" style="padding:6px 8px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:12px; color:#0f172a; background:#f8fafc; outline:none; flex:1;">
+            <option value="pending" {% if submission.status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if submission.status == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if submission.status == 'rejected' %}selected{% endif %}>Rejected</option>
+          </select>
+          <button type="submit" style="padding:6px 10px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">
+            Save
+          </button>
+        </form>
+
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <div style="padding:4rem; text-align:center;">
+        <div style="font-size:48px; margin-bottom:16px;">📭</div>
+        <p style="font-size:16px; font-weight:600; color:#0f172a;">No submissions yet</p>
+        <p style="font-size:13px; color:#94a3b8; margin-top:6px;">Submissions will appear here once users start submitting.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
