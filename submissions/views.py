@@ -13,15 +13,18 @@ def submit(request):
     if not request.user.is_authenticated:
         return redirect('login')
     if request.method == 'POST':
-        form = SubmissionForm(request.POST)
+        form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
             Submission = form.save(commit=False)
             Submission.user = request.user
             Submission.save()
             return redirect('dashboard')
+        else:
+            print("FROM ERRORS:", form.errors)
     else:
         form = SubmissionForm()
     return render(request, 'submissions/submit.html', {'form': form})
+
 def success(request):
     return render(request, 'submission/success.html')
 @login_required

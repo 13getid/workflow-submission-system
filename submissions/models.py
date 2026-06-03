@@ -16,6 +16,7 @@ class Submission(models.Model):
     description = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     submitted_at = models.DateTimeField(auto_now_add= True)
+    file = models.FileField(upload_to='submissions/',blank=True, null=True)
 
     def __str__(self):
         return self.project_title

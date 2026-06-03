@@ -61,8 +61,22 @@
         <!-- Project title + description -->
         <div>
           <div style="font-size:14px; font-weight:700; color:#0f172a;">{{ submission.project_title }}</div>
-          <div style="font-size:12px; color:#94a3b8; margin-top:3px;">{{ submission.description|truncatechars:50 }}</div>
-        </div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:3px;">
+    {{ submission.description|truncatechars:50 }}
+</div>
+{% if submission.file %}
+<div style="display:flex; gap:6px; margin-top:4px;">
+    <a href="{{ submission.file.url }}" target="_blank"
+       style="font-size:11px; color:#1D9E75; font-weight:600; text-decoration:none; background:#f0fdf4; padding:3px 8px; border-radius:6px; border:1px solid #bbf7d0;">
+       👁️ View
+    </a>
+    <a href="{{ submission.file.url }}" download
+       style="font-size:11px; color:#0f172a; font-weight:600; text-decoration:none; background:#f1f5f9; padding:3px 8px; border-radius:6px; border:1px solid #e2e8f0;">
+       ⬇️ Download
+    </a>
+</div>
+{% endif %}
+          
 
         <!-- Username -->
         <div style="font-size:13px; color:#475569; font-weight:500;">

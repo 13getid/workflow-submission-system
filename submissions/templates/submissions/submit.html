@@ -1,13 +1,69 @@
 {% extends 'submissions/base.html' %}
-{% block title %}Submit - SwahiliPot Submission System{% endblock %}
+
+{% block title %}Submit — SwahiliPot{% endblock %}
+
 {% block content %}
-<div class = "hero">
-    <h1>Make a Submission</h1>
-    <p>Fill in the form below and click submit.</p>
-    <form method= "POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button type ="submit" class="btn">Submit</button>
+<div class="page-center">
+  <div style="background:#fff; border-radius:20px; padding:2.5rem; width:100%; max-width:600px; box-shadow:0 20px 60px rgba(0,0,0,0.1);">
+
+    <h1 style="font-size:22px; font-weight:800; color:#0f172a; margin-bottom:6px;">📝 Make a Submission</h1>
+    <p style="font-size:13px; color:#94a3b8; margin-bottom:1.75rem;">Fill in the details and attach your document below.</p>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="field-group">
+        <label class="field-label">FULL NAME</label>
+        <input class="field-input" type="text" name="full_name" placeholder="Your full name" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">EMAIL ADDRESS</label>
+        <input class="field-input" type="email" name="email" placeholder="your@email.com" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">PROJECT TITLE</label>
+        <input class="field-input" type="text" name="project_title" placeholder="Name of your project" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">DESCRIPTION</label>
+        <textarea class="field-input textarea" name="description" placeholder="Describe your project..." required></textarea>
+      </div>
+
+      <!-- File upload section -->
+      <div class="field-group">
+        <label class="field-label">ATTACH DOCUMENT (OPTIONAL)</label>
+        <div style="border:2px dashed #e2e8f0; border-radius:12px; padding:24px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('file-input').click()">
+          <div style="font-size:32px; margin-bottom:8px;">📎</div>
+          <p style="font-size:14px; font-weight:600; color:#0f172a; margin-bottom:4px;">Click to attach a file</p>
+          <p style="font-size:12px; color:#94a3b8;">PDF, Word, Excel, PowerPoint, Images, ZIP — Max 10MB</p>
+          <input id="file-input" type="file" name="file" style="display:none"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.zip,.rar"
+            onchange="showFileName(this)">
+        </div>
+        <div id="file-name" style="margin-top:8px; font-size:13px; color:#1D9E75; font-weight:600; display:none;"></div>
+        {% if form.file.errors %}
+          <div style="margin-top:8px; font-size:13px; color:#991b1b;">{{ form.file.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <button type="submit" class="btn-primary" style="margin-top:0.5rem;">
+        Submit Project →
+      </button>
+
     </form>
+  </div>
 </div>
+
+<script>
+function showFileName(input) {
+    const display = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+        display.textContent = '✅ ' + input.files[0].name;
+        display.style.display = 'block';
+    }
+}
+</script>
 {% endblock %}
