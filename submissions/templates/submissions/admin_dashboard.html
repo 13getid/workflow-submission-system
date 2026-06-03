@@ -3,7 +3,7 @@
 {% block title %}Admin Panel — SwahiliPot{% endblock %}
 
 {% block content %}
-<div style="padding: 2rem 3rem; max-width:1100px; margin: 0 auto;">
+<div style="padding:2rem 3rem; max-width:1100px; margin:0 auto;">
 
   <!-- Header -->
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <!-- Stats row -->
+  <!-- Stats -->
   <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:1.5rem;">
     <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
       <div style="font-size:28px; font-weight:800; color:#1D9E75;">{{ total }}</div>
@@ -36,18 +36,17 @@
     </div>
   </div>
 
-  <!-- Submissions table -->
+  <!-- Table -->
   <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;">
 
-    <!-- Table header -->
     <div style="padding:18px 24px; border-bottom:1px solid #f1f5f9;">
       <span style="font-size:16px; font-weight:700; color:#0f172a;">All Submissions</span>
     </div>
 
     {% if submissions %}
 
-      <!-- Column labels -->
-      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 160px; padding:10px 24px; background:#f8fafc; border-bottom:1px solid #f1f5f9;">
+      <!-- Column headers -->
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 180px; padding:10px 24px; background:#f8fafc; border-bottom:1px solid #f1f5f9; gap:12px;">
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">PROJECT</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">SUBMITTED BY</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">DATE</span>
@@ -56,29 +55,31 @@
       </div>
 
       {% for submission in submissions %}
-      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 160px; padding:16px 24px; border-bottom:1px solid #f8fafc; align-items:center;">
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 180px; padding:16px 24px; border-bottom:1px solid #f8fafc; align-items:center; gap:12px;">
 
-        <!-- Project title + description -->
+        <!-- Project -->
         <div>
-          <div style="font-size:14px; font-weight:700; color:#0f172a;">{{ submission.project_title }}</div>
-          <div style="font-size:12px; color:#94a3b8; margin-top:3px;">
-    {{ submission.description|truncatechars:50 }}
-</div>
-{% if submission.file %}
-<div style="display:flex; gap:6px; margin-top:4px;">
-    <a href="{{ submission.file.url }}" target="_blank"
-       style="font-size:11px; color:#1D9E75; font-weight:600; text-decoration:none; background:#f0fdf4; padding:3px 8px; border-radius:6px; border:1px solid #bbf7d0;">
-       👁️ View
-    </a>
-    <a href="{{ submission.file.url }}" download
-       style="font-size:11px; color:#0f172a; font-weight:600; text-decoration:none; background:#f1f5f9; padding:3px 8px; border-radius:6px; border:1px solid #e2e8f0;">
-       ⬇️ Download
-    </a>
-</div>
-{% endif %}
-          
+          <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">
+            {{ submission.project_title }}
+          </div>
+          <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">
+            {{ submission.description|truncatechars:50 }}
+          </div>
+          {% if submission.file %}
+          <div style="display:flex; gap:8px;">
+            <a href="{{ submission.file.url }}" target="_blank"
+               style="font-size:11px; font-weight:600; color:#1D9E75; text-decoration:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:4px 10px; border-radius:6px;">
+              👁️ View
+            </a>
+            <a href="{{ submission.file.url }}" download
+               style="font-size:11px; font-weight:600; color:#0f172a; text-decoration:none; background:#f1f5f9; border:1px solid #e2e8f0; padding:4px 10px; border-radius:6px;">
+              ⬇️ Download
+            </a>
+          </div>
+          {% endif %}
+        </div>
 
-        <!-- Username -->
+        <!-- Submitted by -->
         <div style="font-size:13px; color:#475569; font-weight:500;">
           👤 {{ submission.user.username }}
         </div>
@@ -99,7 +100,7 @@
           {% endif %}
         </div>
 
-        <!-- Update form -->
+        <!-- Action form -->
         <form method="POST" action="{% url 'update_status' submission.id %}" style="display:flex; gap:6px; align-items:center;">
           {% csrf_token %}
           <select name="status" style="padding:6px 8px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:12px; color:#0f172a; background:#f8fafc; outline:none; flex:1;">
@@ -107,7 +108,7 @@
             <option value="approved" {% if submission.status == 'approved' %}selected{% endif %}>Approved</option>
             <option value="rejected" {% if submission.status == 'rejected' %}selected{% endif %}>Rejected</option>
           </select>
-          <button type="submit" style="padding:6px 10px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">
+          <button type="submit" style="padding:6px 12px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">
             Save
           </button>
         </form>
