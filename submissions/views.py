@@ -2,12 +2,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.mail import send_mail
 from .forms import SubmissionForm
 from .models import Submission
-from django.contrib.admin.views.decorators import staff_member_required
-# Create your views here.
+
+
 def home(request):
     return render(request, 'submissions/home.html')
+
 
 def submit(request):
     if not request.user.is_authenticated:
@@ -15,21 +18,23 @@ def submit(request):
     if request.method == 'POST':
         form = SubmissionForm(request.POST, request.FILES)
         if form.is_valid():
-            Submission = form.save(commit=False)
-            Submission.user = request.user
-            Submission.save()
+            submission = form.save(commit=False)
+            submission.user = request.user
+            submission.save()
             return redirect('dashboard')
-        else:
-            print("FROM ERRORS:", form.errors)
     else:
         form = SubmissionForm()
     return render(request, 'submissions/submit.html', {'form': form})
 
+
 def success(request):
-    return render(request, 'submission/success.html')
+    return render(request, 'submissions/success.html')
+
+
 @login_required
 def dashboard(request):
-    submissions = Submission.objects.filter(user=request.user).order_by('-submitted_at')
+    submissions = Submission.objects.filter(
+        user=request.user).order_by('-submitted_at')
     total = submissions.count()
     approved = submissions.filter(status='approved').count()
     pending = submissions.filter(status='pending').count()
@@ -43,6 +48,7 @@ def dashboard(request):
     }
     return render(request, 'submissions/dashboard.html', context)
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -55,6 +61,7 @@ def login_view(request):
             return render(request, 'submissions/login.html', {'error': True})
     return render(request, 'submissions/login.html')
 
+
 def register_view(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -65,9 +72,11 @@ def register_view(request):
         form = UserCreationForm()
     return render(request, 'submissions/register.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
     return redirect('home')
+
 
 @staff_member_required(login_url='login')
 def admin_dashboard(request):
@@ -85,10 +94,59 @@ def admin_dashboard(request):
     }
     return render(request, 'submissions/admin_dashboard.html', context)
 
+
 @staff_member_required(login_url='login')
 def update_status(request, submission_id):
     if request.method == 'POST':
         submission = Submission.objects.get(id=submission_id)
-        submission.status = request.POST['status']
+        old_status = submission.status
+        new_status = request.POST['status']
+        submission.status = new_status
         submission.save()
+        if old_status != new_status:
+            send_status_email(submission)
     return redirect('admin_dashboard')
+
+
+def send_status_email(submission):
+    username = submission.user.username
+    email = submission.email
+    project = submission.project_title
+    status = submission.status
+
+    if status == 'approved':
+        subject = 'Your submission has been approved!'
+        message = (
+            'Hi ' + username + ',\n\n'
+            'Great news! Your project submission has been reviewed and approved.\n\n'
+            'Project: ' + project + '\n'
+            'Status: Approved\n\n'
+            'Log in to your dashboard to view the full details:\n'
+            'http://127.0.0.1:8000/dashboard/\n\n'
+            'Best regards,\n'
+            'SwahiliPot Submission Team'
+        )
+    elif status == 'rejected':
+        subject = 'Update on your submission'
+        message = (
+            'Hi ' + username + ',\n\n'
+            'Thank you for your submission. After careful review, '
+            'we regret to inform you that your project was not approved at this time.\n\n'
+            'Project: ' + project + '\n'
+            'Status: Rejected\n\n'
+            'You are welcome to make improvements and submit again.\n\n'
+            'Log in to your dashboard:\n'
+            'http://127.0.0.1:8000/dashboard/\n\n'
+            'Best regards,\n'
+            'SwahiliPot Submission Team'
+        )
+    else:
+        return
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email='noreply@swahilipot.com',
+        recipient_list=[email],
+        fail_silently=True,
+    )
