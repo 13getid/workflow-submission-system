@@ -28,6 +28,11 @@
         </div>
 
         <div class="auth-right">
+             <div class="mobile-logo" style="display:none; text-align:center; margin-bottom:1.5rem;">
+                 <div style="width:48px; height:48px; background:#1D9E75; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:8px;">📋</div>
+                <p style="font-size:16px; font-weight:800; color:#0f172a;">SwahiliPot</p>
+                <p style="font-size:12px; color:#94a3b8; margin-top:4px;">Submission System</p>
+            </div>
             <p class="auth-title">Create your account</p>
             <p class="auth-subtitle">Join SwahiliPot today — it's completely free</p>
 
@@ -36,11 +41,21 @@
                 {% for field in form %}
                 <div class="field-group">
                     <label class="field-label">{{ field.label|upper }}</label>
+                    <div style = "position:relative;">
                     <input class="field-input"
                         type="{{ field.field.widget.input_type }}"
                         name="{{ field.html_name }}"
                         placeholder="{{ field.label }}"
-                        {% if field.value %}value="{{ field.value }}"{% endif %}>
+                        id = "if field-{{field.html_name}}"
+                        {% if field.value %}value ="{{ field.value }}"{% endif %}>
+                        {% if field.field.widget.input_type == 'password' %}
+                     <span onclick="togglePassword('field-{{ field.html_name }}', 'icon-{{ field.html_name }}')"
+                  id="icon-{{ field.html_name }}"
+                  style="position:absolute; right:14px; top:50%;
+                         transform:translateY(-50%); cursor:pointer;
+                         font-size:18px; user-select:none;">👁️</span>
+                    {% endif %}
+                 </div>
                     {% if field.errors %}
                     <span style="font-size:12px; color:#991b1b;">{{ field.errors|join:", " }}</span>
                     {% endif %}
@@ -48,6 +63,20 @@
                 {% endfor %}
                 <button type="submit" class="btn-primary">Create account →</button>
             </form>
+
+                <script>
+        function togglePassword(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+        </script>
 
             <div class="auth-divider">
                 <div class="auth-divider-line"></div>
@@ -61,4 +90,6 @@
         </div>
     </div>
 </div>
+  
+
 {% endblock %}

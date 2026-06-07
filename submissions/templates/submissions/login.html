@@ -28,6 +28,10 @@
         </div>
 
         <div class="auth-right">
+             <div class="mobile-logo" style="display:none; text-align:center; margin-bottom:1.5rem;">
+              <div style="width:48px; height:48px; background:#1D9E75; border-radius:12px; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:8px;">📋</div>
+                 <p style="font-size:16px; font-weight:800; color:#0f172a;">SwahiliPot</p>
+            </div>
             <p class="auth-title">Welcome back</p>
             <p class="auth-subtitle">Sign in to your SwahiliPot account</p>
 
@@ -47,7 +51,12 @@
                 </div>
                 <div class="field-group">
                     <label class="field-label">PASSWORD</label>
-                    <input class="field-input" type="password" name="password" placeholder="••••••••">
+                    <div style="position:relative;">
+                    <input class="field-input" type="password" name="password" placeholder="••••••••" id="password-input">
+                    <span onclick ="togglePassword()"
+                           style="position:absolute; right:14px; top:50%; transform:translateY(-50%);
+                 cursor:pointer; font-size:18px; user-select:none;"
+                 id="eye-icon">👁️</span>
                 </div>
                 <a href="#" class="forgot-link">Forgot password?</a>
                 <button type="submit" class="btn-primary">Sign in →</button>
@@ -65,4 +74,19 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword(){
+        var input = document.getElementById('password-input');
+        var icon = document.getElementById('eye-icon');
+        if (input.type === 'password'){
+            input.type = 'text';
+            icon.textContent = '🙈'
+        } else {
+            input.type = 'password';
+            icon.textContent = '👁️';
+    }
+        }
+    </script>
+
 {% endblock %}

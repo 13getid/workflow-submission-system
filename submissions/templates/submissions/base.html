@@ -14,10 +14,11 @@
     </a>
     <div class="navbar-links">
         {% if user.is_authenticated %}
-            {% if user.is_staff %}
+            {% if user.is_staff or user.is_superuser %}
                 <a href="{% url 'admin_dashboard' %}" style="color:#1D9E75; font-weight:700;">⚙️ Admin Panel</a>
-            {% endif %}
+            {% else %}
             <a href="{% url 'dashboard' %}">Dashboard</a>
+            {% endif %}
             <a href="{% url 'logout' %}">Logout</a>
         {% else %}
             <a href="{% url 'login' %}">Sign in</a>
@@ -25,6 +26,30 @@
         {% endif %}
     </div>
 </nav>
+
+{% if messages %}
+<div style="position:fixed; top:70px; right:20px; z-index:1000; max-width:380px;">
+    {% for message in messages %}
+    <div style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534;
+                padding:14px 18px; border-radius:12px; font-size:14px;
+                font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,0.1);
+                margin-bottom:8px; display:flex; align-items:center;
+                justify-content:space-between; gap:12px;"
+         id="flash-message">
+        <span>{{ message }}</span>
+        <span onclick="document.getElementById('flash-message').remove()"
+              style="cursor:pointer; color:#166534; font-size:18px; font-weight:700;">×</span>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    setTimeout(function() {
+        var msg = document.getElementById('flash-message');
+        if (msg) msg.remove();
+    }, 4000);
+</script>
+{% endif %}
 
 {% block content %}
 {% endblock %}

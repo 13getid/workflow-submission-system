@@ -6,6 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail
 from .forms import SubmissionForm
 from .models import Submission
+from django.contrib import messages
 
 
 def home(request):
@@ -21,6 +22,7 @@ def submit(request):
             submission = form.save(commit=False)
             submission.user = request.user
             submission.save()
+            messages.success(request, '🎉 Your submission was received successfully!')
             return redirect('dashboard')
     else:
         form = SubmissionForm()
@@ -50,12 +52,19 @@ def dashboard(request):
 
 
 def login_view(request):
+    # if already logged in  got to the dashboard
+    if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect('admin_dashboard')
+        return redirect('dashboard')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            if user.is_staff or user.is_superuser:
+                return redirect('admin_dashboard')
             return redirect('dashboard')
         else:
             return render(request, 'submissions/login.html', {'error': True})
@@ -63,6 +72,9 @@ def login_view(request):
 
 
 def register_view(request):
+    # If already logged in go to the dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -78,8 +90,13 @@ def logout_view(request):
     return redirect('home')
 
 
-@staff_member_required(login_url='login')
+def is_admin(user):
+    return user.is_authenticated and (user.is_superuser or user.is_staff)
+
+@login_required
 def admin_dashboard(request):
+    if not is_admin(request.user):
+        return redirect('dashboard')
     submissions = Submission.objects.all().order_by('-submitted_at')
     total = submissions.count()
     approved = submissions.filter(status='approved').count()
@@ -95,8 +112,10 @@ def admin_dashboard(request):
     return render(request, 'submissions/admin_dashboard.html', context)
 
 
-@staff_member_required(login_url='login')
+@login_required
 def update_status(request, submission_id):
+    if not is_admin(request.user):
+        return redirect('dashboard')
     if request.method == 'POST':
         submission = Submission.objects.get(id=submission_id)
         old_status = submission.status
