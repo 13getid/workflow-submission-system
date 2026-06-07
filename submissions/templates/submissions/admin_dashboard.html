@@ -39,6 +39,8 @@
   <!-- Search and Filter -->
   <div style="background:#fff; border-radius:14px; padding:16px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:1.25rem;">
     <form method="GET">
+
+      <!-- Search input row -->
       <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
         <input type="text" name="search" value="{{ search }}"
                placeholder="🔍 Search by project title or username..."
@@ -47,11 +49,11 @@
                       font-size:14px; outline:none; background:#f8fafc; color:#0f172a;">
         <button type="submit"
                 style="padding:10px 20px; background:#0f172a; color:#fff; border:none;
-                       border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">
+                       border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; width:auto;">
           Search
         </button>
         {% if search %}
-        <a href="{% url 'admin_dashboard' %}{% if status_filter %}?status={{ status_filter }}{% endif %}"
+        <a href="/admin-dashboard/{% if status_filter %}?status={{ status_filter }}{% endif %}"
            style="padding:10px 14px; background:#fee2e2; color:#991b1b; border-radius:10px;
                   font-size:13px; font-weight:600; text-decoration:none; display:flex; align-items:center;">
           ✕ Clear
@@ -61,37 +63,40 @@
 
       <!-- Filter pills -->
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a href="{% url 'admin_dashboard' %}{% if search %}?search={{ search }}{% endif %}"
+        <a href="/admin-dashboard/{% if search %}?search={{ search }}{% endif %}"
            style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
-                  text-decoration:none; border:2px solid transparent;
-                  {% if not status_filter %}background:#0f172a; color:#fff;
+                  text-decoration:none; border:2px solid;
+                  {% if not status_filter %}background:#0f172a; color:#fff; border-color:#0f172a;
                   {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
           All ({{ total }})
         </a>
-        <a href="{% url 'admin_dashboard' %}?status=pending{% if search %}&search={{ search }}{% endif %}"
+        <a href="/admin-dashboard/?status=pending{% if search %}&search={{ search }}{% endif %}"
            style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
-                  text-decoration:none; border:2px solid transparent;
+                  text-decoration:none; border:2px solid;
                   {% if status_filter == 'pending' %}background:#fef9c3; color:#854d0e; border-color:#fde047;
                   {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
           ⏳ Pending ({{ pending }})
         </a>
-        <a href="{% url 'admin_dashboard' %}?status=approved{% if search %}&search={{ search }}{% endif %}"
+        <a href="/admin-dashboard/?status=approved{% if search %}&search={{ search }}{% endif %}"
            style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
-                  text-decoration:none; border:2px solid transparent;
+                  text-decoration:none; border:2px solid;
                   {% if status_filter == 'approved' %}background:#dcfce7; color:#166534; border-color:#86efac;
                   {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
           ✅ Approved ({{ approved }})
         </a>
-        <a href="{% url 'admin_dashboard' %}?status=rejected{% if search %}&search={{ search }}{% endif %}"
+        <a href="/admin-dashboard/?status=rejected{% if search %}&search={{ search }}{% endif %}"
            style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
-                  text-decoration:none; border:2px solid transparent;
+                  text-decoration:none; border:2px solid;
                   {% if status_filter == 'rejected' %}background:#fee2e2; color:#991b1b; border-color:#fca5a5;
                   {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
           ❌ Rejected ({{ rejected }})
         </a>
       </div>
+
     </form>
+    <!-- ✅ form closed here -->
   </div>
+  <!-- ✅ search box div closed here -->
 
   <!-- Results count -->
   {% if search or status_filter %}
@@ -107,21 +112,16 @@
   <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;">
 
     <div style="padding:16px 24px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-size:15px; font-weight:700; color:#0f172a;">
-        All Submissions
-      </span>
-      <span style="font-size:12px; color:#94a3b8;">
-        {{ submissions|length }} of {{ total }} total
-      </span>
+      <span style="font-size:15px; font-weight:700; color:#0f172a;">All Submissions</span>
+      <span style="font-size:12px; color:#94a3b8;">{{ submissions|length }} of {{ total }} total</span>
     </div>
 
     {% if submissions %}
-    <!-- Desktop table — hidden on mobile -->
+
+    <!-- Desktop table -->
     <div class="desktop-table">
-      <!-- Column headers -->
       <div style="display:grid; grid-template-columns:2.5fr 1fr 1fr 1fr 200px;
-                  padding:10px 24px; background:#f8fafc;
-                  border-bottom:1px solid #f1f5f9; gap:12px;">
+                  padding:10px 24px; background:#f8fafc; border-bottom:1px solid #f1f5f9; gap:12px;">
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">PROJECT</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">SUBMITTED BY</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">DATE</span>
@@ -173,7 +173,7 @@
           {{ submission.submitted_at|date:"M j, Y" }}
         </div>
 
-        <!-- Status -->
+        <!-- Status badge -->
         <div>
           {% if submission.status == 'approved' %}
             <span style="background:#dcfce7; color:#166534; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;">✅ Approved</span>
@@ -199,7 +199,7 @@
           <button type="submit"
                   style="padding:7px 12px; background:#0f172a; color:#fff; border:none;
                          border-radius:8px; font-size:12px; font-weight:600;
-                         cursor:pointer; white-space:nowrap;">
+                         cursor:pointer; white-space:nowrap; width:auto;">
             Save
           </button>
         </form>
@@ -207,13 +207,13 @@
       </div>
       {% endfor %}
     </div>
+    <!-- ✅ desktop-table closed -->
 
-    <!-- Mobile cards — shown only on mobile -->
+    <!-- Mobile cards -->
     <div class="mobile-cards">
       {% for submission in submissions %}
       <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9;">
 
-        <!-- Top row: title + status -->
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px;">
           <div style="font-size:14px; font-weight:700; color:#0f172a; flex:1;">
             {{ submission.project_title }}
@@ -227,17 +227,14 @@
           {% endif %}
         </div>
 
-        <!-- Meta row -->
         <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">
           👤 {{ submission.user.username }} &nbsp;·&nbsp; 📅 {{ submission.submitted_at|date:"M j, Y" }}
         </div>
 
-        <!-- Description -->
         <div style="font-size:12px; color:#64748b; margin-bottom:10px;">
           {{ submission.description|truncatechars:80 }}
         </div>
 
-        <!-- File buttons -->
         {% if submission.file %}
         <div style="display:flex; gap:6px; margin-bottom:10px;">
           <a href="{{ submission.file.url }}" target="_blank"
@@ -253,7 +250,6 @@
         </div>
         {% endif %}
 
-        <!-- Action form -->
         <form method="POST" action="{% url 'update_status' submission.id %}"
               style="display:flex; gap:8px; align-items:center;">
           {% csrf_token %}
@@ -266,7 +262,8 @@
           </select>
           <button type="submit"
                   style="padding:8px 16px; background:#0f172a; color:#fff; border:none;
-                         border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                         border-radius:8px; font-size:13px; font-weight:600;
+                         cursor:pointer; width:auto;">
             Save
           </button>
         </form>
@@ -274,6 +271,7 @@
       </div>
       {% endfor %}
     </div>
+    <!-- ✅ mobile-cards closed -->
 
     {% else %}
     <div style="padding:4rem; text-align:center;">
@@ -288,7 +286,10 @@
     {% endif %}
 
   </div>
+  <!-- ✅ table div closed -->
+
 </div>
+<!-- ✅ outer wrapper closed -->
 
 <style>
 .mobile-cards { display: none; }
