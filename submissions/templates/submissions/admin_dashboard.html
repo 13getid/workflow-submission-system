@@ -3,13 +3,13 @@
 {% block title %}Admin Panel — SwahiliPot{% endblock %}
 
 {% block content %}
-<div style="padding:2rem 3rem; max-width:1100px; margin:0 auto;">
+<div style="padding:1.5rem; max-width:1200px; margin:0 auto;">
 
   <!-- Header -->
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:12px;">
     <div>
-      <h1 style="font-size:26px; font-weight:800; color:#0f172a;">⚙️ Admin Panel</h1>
-      <p style="font-size:14px; color:#64748b; margin-top:4px;">Manage all submissions from all users</p>
+      <h1 style="font-size:24px; font-weight:800; color:#0f172a;">⚙️ Admin Panel</h1>
+      <p style="font-size:13px; color:#64748b; margin-top:4px;">Manage all submissions from all users</p>
     </div>
     <div style="background:#0f172a; color:#1D9E75; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:700;">
       👤 {{ request.user.username }}
@@ -17,36 +17,111 @@
   </div>
 
   <!-- Stats -->
-  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:1.5rem;">
-    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-      <div style="font-size:28px; font-weight:800; color:#1D9E75;">{{ total }}</div>
+  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem;">
+    <div style="background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:26px; font-weight:800; color:#1D9E75;">{{ total }}</div>
       <div style="font-size:12px; color:#64748b; margin-top:4px;">Total submissions</div>
     </div>
-    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-      <div style="font-size:28px; font-weight:800; color:#166534;">{{ approved }}</div>
+    <div style="background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:26px; font-weight:800; color:#166534;">{{ approved }}</div>
       <div style="font-size:12px; color:#64748b; margin-top:4px;">Approved</div>
     </div>
-    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-      <div style="font-size:28px; font-weight:800; color:#854d0e;">{{ pending }}</div>
+    <div style="background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:26px; font-weight:800; color:#854d0e;">{{ pending }}</div>
       <div style="font-size:12px; color:#64748b; margin-top:4px;">Pending</div>
     </div>
-    <div style="background:#fff; border-radius:14px; padding:18px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-      <div style="font-size:28px; font-weight:800; color:#991b1b;">{{ rejected }}</div>
+    <div style="background:#fff; border-radius:14px; padding:16px 18px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:26px; font-weight:800; color:#991b1b;">{{ rejected }}</div>
       <div style="font-size:12px; color:#64748b; margin-top:4px;">Rejected</div>
     </div>
   </div>
 
+  <!-- Search and Filter -->
+  <div style="background:#fff; border-radius:14px; padding:16px 20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:1.25rem;">
+    <form method="GET">
+      <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+        <input type="text" name="search" value="{{ search }}"
+               placeholder="🔍 Search by project title or username..."
+               style="flex:1; min-width:200px; padding:10px 14px;
+                      border:1.5px solid #e2e8f0; border-radius:10px;
+                      font-size:14px; outline:none; background:#f8fafc; color:#0f172a;">
+        <button type="submit"
+                style="padding:10px 20px; background:#0f172a; color:#fff; border:none;
+                       border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">
+          Search
+        </button>
+        {% if search %}
+        <a href="{% url 'admin_dashboard' %}{% if status_filter %}?status={{ status_filter }}{% endif %}"
+           style="padding:10px 14px; background:#fee2e2; color:#991b1b; border-radius:10px;
+                  font-size:13px; font-weight:600; text-decoration:none; display:flex; align-items:center;">
+          ✕ Clear
+        </a>
+        {% endif %}
+      </div>
+
+      <!-- Filter pills -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <a href="{% url 'admin_dashboard' %}{% if search %}?search={{ search }}{% endif %}"
+           style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
+                  text-decoration:none; border:2px solid transparent;
+                  {% if not status_filter %}background:#0f172a; color:#fff;
+                  {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
+          All ({{ total }})
+        </a>
+        <a href="{% url 'admin_dashboard' %}?status=pending{% if search %}&search={{ search }}{% endif %}"
+           style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
+                  text-decoration:none; border:2px solid transparent;
+                  {% if status_filter == 'pending' %}background:#fef9c3; color:#854d0e; border-color:#fde047;
+                  {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
+          ⏳ Pending ({{ pending }})
+        </a>
+        <a href="{% url 'admin_dashboard' %}?status=approved{% if search %}&search={{ search }}{% endif %}"
+           style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
+                  text-decoration:none; border:2px solid transparent;
+                  {% if status_filter == 'approved' %}background:#dcfce7; color:#166534; border-color:#86efac;
+                  {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
+          ✅ Approved ({{ approved }})
+        </a>
+        <a href="{% url 'admin_dashboard' %}?status=rejected{% if search %}&search={{ search }}{% endif %}"
+           style="padding:7px 16px; border-radius:20px; font-size:12px; font-weight:700;
+                  text-decoration:none; border:2px solid transparent;
+                  {% if status_filter == 'rejected' %}background:#fee2e2; color:#991b1b; border-color:#fca5a5;
+                  {% else %}background:#f1f5f9; color:#64748b; border-color:#e2e8f0;{% endif %}">
+          ❌ Rejected ({{ rejected }})
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Results count -->
+  {% if search or status_filter %}
+  <p style="font-size:13px; color:#64748b; margin-bottom:1rem;">
+    Found <strong style="color:#0f172a;">{{ submissions|length }}</strong>
+    result{{ submissions|length|pluralize }}
+    {% if search %}matching "<strong>{{ search }}</strong>"{% endif %}
+    {% if status_filter %}with status <strong>{{ status_filter }}</strong>{% endif %}
+  </p>
+  {% endif %}
+
   <!-- Table -->
   <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); overflow:hidden;">
 
-    <div style="padding:18px 24px; border-bottom:1px solid #f1f5f9;">
-      <span style="font-size:16px; font-weight:700; color:#0f172a;">All Submissions</span>
+    <div style="padding:16px 24px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:15px; font-weight:700; color:#0f172a;">
+        All Submissions
+      </span>
+      <span style="font-size:12px; color:#94a3b8;">
+        {{ submissions|length }} of {{ total }} total
+      </span>
     </div>
 
     {% if submissions %}
-
+    <!-- Desktop table — hidden on mobile -->
+    <div class="desktop-table">
       <!-- Column headers -->
-      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 180px; padding:10px 24px; background:#f8fafc; border-bottom:1px solid #f1f5f9; gap:12px;">
+      <div style="display:grid; grid-template-columns:2.5fr 1fr 1fr 1fr 200px;
+                  padding:10px 24px; background:#f8fafc;
+                  border-bottom:1px solid #f1f5f9; gap:12px;">
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">PROJECT</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">SUBMITTED BY</span>
         <span style="font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:0.05em;">DATE</span>
@@ -55,24 +130,28 @@
       </div>
 
       {% for submission in submissions %}
-      <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 180px; padding:16px 24px; border-bottom:1px solid #f8fafc; align-items:center; gap:12px;">
+      <div style="display:grid; grid-template-columns:2.5fr 1fr 1fr 1fr 200px;
+                  padding:16px 24px; border-bottom:1px solid #f8fafc;
+                  align-items:center; gap:12px;">
 
         <!-- Project -->
         <div>
-          <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">
+          <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:3px;">
             {{ submission.project_title }}
           </div>
-          <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">
-            {{ submission.description|truncatechars:50 }}
+          <div style="font-size:12px; color:#94a3b8; margin-bottom:6px;">
+            {{ submission.description|truncatechars:45 }}
           </div>
           {% if submission.file %}
-          <div style="display:flex; gap:8px;">
+          <div style="display:flex; gap:6px;">
             <a href="{{ submission.file.url }}" target="_blank"
-               style="font-size:11px; font-weight:600; color:#1D9E75; text-decoration:none; background:#f0fdf4; border:1px solid #bbf7d0; padding:4px 10px; border-radius:6px;">
+               style="font-size:11px; font-weight:600; color:#1D9E75; text-decoration:none;
+                      background:#f0fdf4; border:1px solid #bbf7d0; padding:3px 10px; border-radius:6px;">
               👁️ View
             </a>
             <a href="{{ submission.file.url }}" download
-               style="font-size:11px; font-weight:600; color:#0f172a; text-decoration:none; background:#f1f5f9; border:1px solid #e2e8f0; padding:4px 10px; border-radius:6px;">
+               style="font-size:11px; font-weight:600; color:#0f172a; text-decoration:none;
+                      background:#f1f5f9; border:1px solid #e2e8f0; padding:3px 10px; border-radius:6px;">
               ⬇️ Download
             </a>
           </div>
@@ -80,50 +159,151 @@
         </div>
 
         <!-- Submitted by -->
-        <div style="font-size:13px; color:#475569; font-weight:500;">
-          👤 {{ submission.user.username }}
+        <div>
+          <div style="font-size:13px; color:#475569; font-weight:600;">
+            {{ submission.user.username }}
+          </div>
+          <div style="font-size:11px; color:#94a3b8; margin-top:2px;">
+            {{ submission.email }}
+          </div>
         </div>
 
         <!-- Date -->
-        <div style="font-size:12px; color:#94a3b8;">
+        <div style="font-size:12px; color:#64748b;">
           {{ submission.submitted_at|date:"M j, Y" }}
         </div>
 
-        <!-- Status badge -->
+        <!-- Status -->
         <div>
           {% if submission.status == 'approved' %}
-            <span style="background:#dcfce7; color:#166534; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">✅ Approved</span>
+            <span style="background:#dcfce7; color:#166534; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;">✅ Approved</span>
           {% elif submission.status == 'rejected' %}
-            <span style="background:#fee2e2; color:#991b1b; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">❌ Rejected</span>
+            <span style="background:#fee2e2; color:#991b1b; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;">❌ Rejected</span>
           {% else %}
-            <span style="background:#fef9c3; color:#854d0e; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;">⏳ Pending</span>
+            <span style="background:#fef9c3; color:#854d0e; padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap;">⏳ Pending</span>
           {% endif %}
         </div>
 
-        <!-- Action form -->
-        <form method="POST" action="{% url 'update_status' submission.id %}" style="display:flex; gap:6px; align-items:center;">
+        <!-- Action -->
+        <form method="POST" action="{% url 'update_status' submission.id %}"
+              style="display:flex; gap:6px; align-items:center;">
           {% csrf_token %}
-          <select name="status" style="padding:6px 8px; border:1.5px solid #e2e8f0; border-radius:8px; font-size:12px; color:#0f172a; background:#f8fafc; outline:none; flex:1;">
+          <select name="status"
+                  style="flex:1; padding:7px 8px; border:1.5px solid #e2e8f0;
+                         border-radius:8px; font-size:12px; color:#0f172a;
+                         background:#f8fafc; outline:none;">
             <option value="pending" {% if submission.status == 'pending' %}selected{% endif %}>Pending</option>
             <option value="approved" {% if submission.status == 'approved' %}selected{% endif %}>Approved</option>
             <option value="rejected" {% if submission.status == 'rejected' %}selected{% endif %}>Rejected</option>
           </select>
-          <button type="submit" style="padding:6px 12px; background:#0f172a; color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">
+          <button type="submit"
+                  style="padding:7px 12px; background:#0f172a; color:#fff; border:none;
+                         border-radius:8px; font-size:12px; font-weight:600;
+                         cursor:pointer; white-space:nowrap;">
             Save
           </button>
         </form>
 
       </div>
       {% endfor %}
+    </div>
+
+    <!-- Mobile cards — shown only on mobile -->
+    <div class="mobile-cards">
+      {% for submission in submissions %}
+      <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9;">
+
+        <!-- Top row: title + status -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px;">
+          <div style="font-size:14px; font-weight:700; color:#0f172a; flex:1;">
+            {{ submission.project_title }}
+          </div>
+          {% if submission.status == 'approved' %}
+            <span style="background:#dcfce7; color:#166634; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; flex-shrink:0;">✅ Approved</span>
+          {% elif submission.status == 'rejected' %}
+            <span style="background:#fee2e2; color:#991b1b; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; flex-shrink:0;">❌ Rejected</span>
+          {% else %}
+            <span style="background:#fef9c3; color:#854d0e; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; flex-shrink:0;">⏳ Pending</span>
+          {% endif %}
+        </div>
+
+        <!-- Meta row -->
+        <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">
+          👤 {{ submission.user.username }} &nbsp;·&nbsp; 📅 {{ submission.submitted_at|date:"M j, Y" }}
+        </div>
+
+        <!-- Description -->
+        <div style="font-size:12px; color:#64748b; margin-bottom:10px;">
+          {{ submission.description|truncatechars:80 }}
+        </div>
+
+        <!-- File buttons -->
+        {% if submission.file %}
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+          <a href="{{ submission.file.url }}" target="_blank"
+             style="font-size:11px; font-weight:600; color:#1D9E75; text-decoration:none;
+                    background:#f0fdf4; border:1px solid #bbf7d0; padding:4px 10px; border-radius:6px;">
+            👁️ View
+          </a>
+          <a href="{{ submission.file.url }}" download
+             style="font-size:11px; font-weight:600; color:#0f172a; text-decoration:none;
+                    background:#f1f5f9; border:1px solid #e2e8f0; padding:4px 10px; border-radius:6px;">
+            ⬇️ Download
+          </a>
+        </div>
+        {% endif %}
+
+        <!-- Action form -->
+        <form method="POST" action="{% url 'update_status' submission.id %}"
+              style="display:flex; gap:8px; align-items:center;">
+          {% csrf_token %}
+          <select name="status"
+                  style="flex:1; padding:8px; border:1.5px solid #e2e8f0; border-radius:8px;
+                         font-size:13px; color:#0f172a; background:#f8fafc; outline:none;">
+            <option value="pending" {% if submission.status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if submission.status == 'approved' %}selected{% endif %}>Approved</option>
+            <option value="rejected" {% if submission.status == 'rejected' %}selected{% endif %}>Rejected</option>
+          </select>
+          <button type="submit"
+                  style="padding:8px 16px; background:#0f172a; color:#fff; border:none;
+                         border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">
+            Save
+          </button>
+        </form>
+
+      </div>
+      {% endfor %}
+    </div>
 
     {% else %}
-      <div style="padding:4rem; text-align:center;">
-        <div style="font-size:48px; margin-bottom:16px;">📭</div>
-        <p style="font-size:16px; font-weight:600; color:#0f172a;">No submissions yet</p>
-        <p style="font-size:13px; color:#94a3b8; margin-top:6px;">Submissions will appear here once users start submitting.</p>
-      </div>
+    <div style="padding:4rem; text-align:center;">
+      <div style="font-size:48px; margin-bottom:16px;">📭</div>
+      <p style="font-size:16px; font-weight:600; color:#0f172a; margin-bottom:8px;">
+        {% if search %}No results for "{{ search }}"{% else %}No submissions yet{% endif %}
+      </p>
+      <p style="font-size:13px; color:#94a3b8;">
+        {% if search %}Try a different search term{% else %}Submissions will appear here once users start submitting{% endif %}
+      </p>
+    </div>
     {% endif %}
 
   </div>
 </div>
+
+<style>
+.mobile-cards { display: none; }
+.desktop-table { display: block; }
+
+@media (max-width: 768px) {
+    .desktop-table { display: none; }
+    .mobile-cards { display: block; }
+}
+
+@media (max-width: 480px) {
+    div[style*="grid-template-columns:repeat(4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+</style>
+
 {% endblock %}

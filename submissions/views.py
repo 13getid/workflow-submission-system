@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from .forms import SubmissionForm
 from .models import Submission
 from django.contrib import messages
+from django.db.models import Q
 
 
 def home(request):
@@ -97,11 +98,29 @@ def is_admin(user):
 def admin_dashboard(request):
     if not is_admin(request.user):
         return redirect('dashboard')
+    
+    #starts with all submissions
     submissions = Submission.objects.all().order_by('-submitted_at')
+
+    #Search filter
+    search = request.GET.get('search','')
+    if search:
+        submissions = submissions.filter(
+            Q(project_title__icontains = search) | 
+            Q( user__username__icontains = search)
+        )
+        
+        #filter by status
+        status_filter = request.GET.get('status','')
+        if status_filter in ['pending','approved','rejected']:
+            submissions = submissions.filter(status = status_filter)
+
+
     total = submissions.count()
     approved = submissions.filter(status='approved').count()
     pending = submissions.filter(status='pending').count()
     rejected = submissions.filter(status='rejected').count()
+    
     context = {
         'submissions': submissions,
         'total': total,
