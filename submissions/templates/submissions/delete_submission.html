@@ -1,0 +1,65 @@
+{% extends 'submissions/base.html' %}
+
+{% block title %}Delete Submission — SwahiliPot{% endblock %}
+
+{% block content %}
+<div class="page-center">
+  <div style="background:#fff; border-radius:20px; padding:2.5rem;
+              width:100%; max-width:480px;
+              box-shadow:0 20px 60px rgba(0,0,0,0.1); text-align:center;">
+
+    <!-- Warning icon -->
+    <div style="width:64px; height:64px; background:#fee2e2; border-radius:50%;
+                display:flex; align-items:center; justify-content:center;
+                margin:0 auto 1.25rem; font-size:28px;">
+      🗑️
+    </div>
+
+    <h1 style="font-size:20px; font-weight:800; color:#0f172a; margin-bottom:8px;">
+      Delete this submission?
+    </h1>
+    <p style="font-size:13px; color:#64748b; margin-bottom:6px;">
+      You are about to permanently delete:
+    </p>
+    <p style="font-size:15px; font-weight:700; color:#0f172a; margin-bottom:4px;">
+      "{{ submission.project_title }}"
+    </p>
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:1.75rem;">
+      This cannot be undone. The submission and its file will be gone forever.
+    </p>
+
+    <!-- Warning box -->
+    <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:10px;
+                padding:12px 16px; margin-bottom:1.75rem; text-align:left;">
+      <p style="font-size:12px; color:#991b1b; font-weight:600; margin-bottom:4px;">
+        ⚠️ This will permanently delete:
+      </p>
+      <p style="font-size:12px; color:#991b1b;">
+        • The submission record from the database<br>
+        • Any file attached to this submission<br>
+        • All history related to this submission
+      </p>
+    </div>
+
+    <!-- Confirm buttons -->
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display:flex; gap:10px;">
+        <a href="{% url 'dashboard' %}"
+           style="flex:1; padding:12px; background:#f1f5f9; color:#0f172a;
+                  border-radius:10px; font-size:14px; font-weight:700;
+                  text-decoration:none; text-align:center;">
+          Cancel
+        </a>
+        <button type="submit"
+                style="flex:1; padding:12px; background:#ef4444; color:#fff;
+                       border:none; border-radius:10px; font-size:14px;
+                       font-weight:700; cursor:pointer;">
+          Yes, Delete
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

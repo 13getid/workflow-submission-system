@@ -51,6 +51,48 @@ def dashboard(request):
     }
     return render(request, 'submissions/dashboard.html', context)
 
+@login_required
+def edit_submission(request, submission_id):
+    submission = Submission.objects.get(id=submission_id)
+
+    # make sure only the owner can edit it
+    if submission.user != request.user:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = SubmissionForm( request.POST, request.FILES, instance=submission)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '✅ Your submission was updated successfully!')
+            return redirect('dashboard')
+        else:
+            form = SubmissionForm(instance=submission)
+
+        return render(request,'submissions/edit_submission.html',{
+            'form': form,
+            'submission': submission
+        })
+    
+    @login_required
+    def delete_submission(request,submission_id):
+        submission = Submission.objects.get(id=submission_id)
+
+        #make sure only the owner can delete
+        if submission.user != request.user:
+            return redirect('dashboard')
+        
+        if request.method == 'POST':
+            submission.delete()
+            messages.success(request,'🗑️ Your submission was deleted.')
+            return redirect ('dashboard')
+        
+        return render(request,'submissions/delete_submission.html', {
+        'submission': submission
+        })
+        
+
+
+ 
 
 def login_view(request):
     # if already logged in  got to the dashboard

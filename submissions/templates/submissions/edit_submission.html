@@ -1,0 +1,122 @@
+{% extends 'submissions/base.html' %}
+
+{% block title %}Edit Submission — SwahiliPot{% endblock %}
+
+{% block content %}
+<div class="page-center">
+  <div style="background:#fff; border-radius:20px; padding:2.5rem;
+              width:100%; max-width:600px;
+              box-shadow:0 20px 60px rgba(0,0,0,0.1);">
+
+    <!-- Header -->
+    <div style="margin-bottom:1.75rem;">
+      <h1 style="font-size:22px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+        ✏️ Edit Submission
+      </h1>
+      <p style="font-size:13px; color:#94a3b8;">
+        Editing: <strong style="color:#0f172a;">{{ submission.project_title }}</strong>
+      </p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="field-group">
+        <label class="field-label">FULL NAME</label>
+        <input class="field-input" type="text" name="full_name"
+               value="{{ form.full_name.value }}" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">EMAIL ADDRESS</label>
+        <input class="field-input" type="email" name="email"
+               value="{{ form.email.value }}" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">PROJECT TITLE</label>
+        <input class="field-input" type="text" name="project_title"
+               value="{{ form.project_title.value }}" required>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">DESCRIPTION</label>
+        <textarea class="field-input textarea" name="description"
+                  required>{{ form.description.value }}</textarea>
+      </div>
+
+      <!-- Current file -->
+      {% if submission.file %}
+      <div class="field-group">
+        <label class="field-label">CURRENT FILE</label>
+        <div style="display:flex; align-items:center; gap:10px; padding:10px 14px;
+                    background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px;">
+          <span style="font-size:20px;">📎</span>
+          <div>
+            <div style="font-size:13px; font-weight:600; color:#166534;">
+              File attached
+            </div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">
+              Upload a new file below to replace it
+            </div>
+          </div>
+          <a href="{{ submission.file.url }}" target="_blank"
+             style="margin-left:auto; font-size:12px; color:#1D9E75;
+                    font-weight:600; text-decoration:none;">
+            View →
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- File upload -->
+      <div class="field-group">
+        <label class="field-label">
+          {% if submission.file %}REPLACE FILE (OPTIONAL){% else %}ATTACH FILE (OPTIONAL){% endif %}
+        </label>
+        <div style="border:2px dashed #e2e8f0; border-radius:12px; padding:20px;
+                    text-align:center; background:#f8fafc; cursor:pointer;"
+             onclick="document.getElementById('file-input').click()">
+          <div style="font-size:28px; margin-bottom:6px;">📎</div>
+          <p style="font-size:13px; font-weight:600; color:#0f172a; margin-bottom:3px;">
+            Click to attach a file
+          </p>
+          <p style="font-size:11px; color:#94a3b8;">
+            PDF, Word, Excel, PowerPoint, Images, ZIP — Max 10MB
+          </p>
+          <input id="file-input" type="file" name="file" style="display:none"
+                 accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.zip,.rar"
+                 onchange="showFileName(this)">
+        </div>
+        <div id="file-name" style="margin-top:8px; font-size:13px;
+                                    color:#1D9E75; font-weight:600; display:none;">
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div style="display:flex; gap:10px; margin-top:0.5rem;">
+        <button type="submit" class="btn-primary" style="margin-bottom:0; flex:1;">
+          Save Changes →
+        </button>
+        <a href="{% url 'dashboard' %}"
+           style="flex:1; padding:12px; background:#f1f5f9; color:#64748b;
+                  border-radius:10px; font-size:14px; font-weight:700;
+                  text-decoration:none; text-align:center;">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+function showFileName(input) {
+    const display = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+        display.textContent = '✅ ' + input.files[0].name;
+        display.style.display = 'block';
+    }
+}
+</script>
+{% endblock %}
