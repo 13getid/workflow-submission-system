@@ -2,12 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail
-from .forms import SubmissionForm
-from .models import Submission
 from django.contrib import messages
 from django.db.models import Q
+from .forms import SubmissionForm
+from .models import Submission
 
 
 def home(request):
@@ -51,51 +50,51 @@ def dashboard(request):
     }
     return render(request, 'submissions/dashboard.html', context)
 
+
 @login_required
 def edit_submission(request, submission_id):
     submission = Submission.objects.get(id=submission_id)
 
-    # make sure only the owner can edit it
+    # Only the owner can edit
     if submission.user != request.user:
         return redirect('dashboard')
-    
+
     if request.method == 'POST':
-        form = SubmissionForm( request.POST, request.FILES, instance=submission)
+        form = SubmissionForm(request.POST, request.FILES, instance=submission)
         if form.is_valid():
             form.save()
             messages.success(request, '✅ Your submission was updated successfully!')
             return redirect('dashboard')
-        else:
-            form = SubmissionForm(instance=submission)
+    else:
+        form = SubmissionForm(instance=submission)
 
-        return render(request,'submissions/edit_submission.html',{
-            'form': form,
-            'submission': submission
-        })
-    
-    @login_required
-    def delete_submission(request,submission_id):
-        submission = Submission.objects.get(id=submission_id)
-
-        #make sure only the owner can delete
-        if submission.user != request.user:
-            return redirect('dashboard')
-        
-        if request.method == 'POST':
-            submission.delete()
-            messages.success(request,'🗑️ Your submission was deleted.')
-            return redirect ('dashboard')
-        
-        return render(request,'submissions/delete_submission.html', {
+    return render(request, 'submissions/edit_submission.html', {
+        'form': form,
         'submission': submission
-        })
-        
+    })
+# ✅ edit_submission ends here — at zero indentation
 
 
- 
+@login_required
+def delete_submission(request, submission_id):
+    submission = Submission.objects.get(id=submission_id)
+
+    # Only the owner can delete
+    if submission.user != request.user:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        submission.delete()
+        messages.success(request, '🗑️ Your submission was deleted.')
+        return redirect('dashboard')
+
+    return render(request, 'submissions/delete_submission.html', {
+        'submission': submission
+    })
+# ✅ delete_submission ends here — at zero indentation
+
 
 def login_view(request):
-    # if already logged in  got to the dashboard
     if request.user.is_authenticated:
         if request.user.is_staff or request.user.is_superuser:
             return redirect('admin_dashboard')
@@ -115,7 +114,6 @@ def login_view(request):
 
 
 def register_view(request):
-    # If already logged in go to the dashboard
     if request.user.is_authenticated:
         return redirect('dashboard')
     if request.method == 'POST':
@@ -134,39 +132,35 @@ def logout_view(request):
 
 
 def is_admin(user):
-    return user.is_authenticated and (user.is_superuser or user.is_staff)
+    return user.is_staff or user.is_superuser
+
 
 @login_required
 def admin_dashboard(request):
     if not is_admin(request.user):
         return redirect('dashboard')
-        
-    
-    # Get search and filter value from URL
+
     search = request.GET.get('search', '').strip()
     status_filter = request.GET.get('status', '').strip()
 
-    # stats always show TOTAL counts not filtered counts
     total = Submission.objects.count()
     approved = Submission.objects.filter(status='approved').count()
     pending = Submission.objects.filter(status='pending').count()
     rejected = Submission.objects.filter(status='rejected').count()
 
-    #start with everything
-    submissions = Submission.objects.all().order_by('-submitted_at')
-    
-    # apply search if typed
-    if search :
-        submissions = submissions.filter(
-            Q(project_title__icontains= search) |
+    qs = Submission.objects.all().order_by('-submitted_at')
+
+    if search:
+        qs = qs.filter(
+            Q(project_title__icontains=search) |
             Q(user__username__icontains=search)
         )
-         # Apply status filter if clicked
+
     if status_filter in ['pending', 'approved', 'rejected']:
-        submissions = submissions.filter(status=status_filter)
+        qs = qs.filter(status=status_filter)
 
     context = {
-        'submissions': submissions,
+        'submissions': qs,
         'total': total,
         'approved': approved,
         'pending': pending,
@@ -174,7 +168,6 @@ def admin_dashboard(request):
         'search': search,
         'status_filter': status_filter,
     }
-
     return render(request, 'submissions/admin_dashboard.html', context)
 
 
